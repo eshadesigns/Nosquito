@@ -22,9 +22,41 @@ import * as d3 from 'd3';
     LOW: 'Monitor'
   };
 
+  // Eight of the nine CSV practices get their own validated hue (checked
+  // with the dataviz skill's validator against this app's dark map surface,
+  // #0a2618 — all adjacent-pair CVD/contrast checks pass). The ninth,
+  // "Other / innovative", is a genuine catch-all bucket, so per the skill's
+  // rule ("a 9th series is never a generated hue") it isn't given a hue at
+  // all — it's shown as a dashed ring around the county instead.
+  const PRACTICE_COLORS = {
+    larviciding:     '#3987e5', // blue
+    sourceReduction: '#d95926', // orange
+    adulticiding:    '#199e70', // aqua
+    biological:      '#c98500', // yellow
+    publicEducation: '#d55181', // magenta
+    surveillance:    '#008300', // green
+    aerial:          '#9085e9', // violet
+    ground:          '#e66767', // red
+  };
+  const CONTROL_PRACTICE_KEYS = Object.keys(PRACTICE_COLORS).concat('otherInnovative');
+  const PRACTICE_LABELS = {
+    larviciding:     'Larviciding',
+    sourceReduction: 'Source reduction',
+    adulticiding:    'Adulticiding',
+    biological:      'Biological control',
+    publicEducation: 'Public education',
+    surveillance:    'Surveillance',
+    aerial:          'Aerial treatment',
+    ground:          'Ground treatment',
+    otherInnovative: 'Other / innovative',
+  };
+  const CONTROL_NONE_COLOR = '#898781';    // has data, no practice active
+  const CONTROL_UNKNOWN_COLOR = '#4a4a47'; // no CSV data for this county
+
   let REGIONS = [];
   let REGION_BY_ID = {};
   let REGION_BY_COUNTY = {};
+  let PRACTICES_BY_ID = {};
 
   let FLORIDA_GEOJSON = null;
 
@@ -34,7 +66,7 @@ import * as d3 from 'd3';
   ========================================================= */
 
   const state = {
-    activeLayer: 'priority',
+    activeLayer: 'control',
     selectedId: null,
     panelCollapsed: false,
     activeTab: 'skeeter',
@@ -65,6 +97,21 @@ import * as d3 from 'd3';
         normalizeCountyName(region.county),
         region
       ])
+    );
+  }
+
+
+  async function loadTreatmentPractices() {
+    const res = await fetch('/api/treatment-practices');
+
+    if (!res.ok) {
+      throw new Error('Could not load /api/treatment-practices');
+    }
+
+    const practices = await res.json();
+
+    PRACTICES_BY_ID = Object.fromEntries(
+      practices.map(p => [p.id, p])
     );
   }
 
@@ -155,9 +202,59 @@ import * as d3 from 'd3';
   }
 
 
+  // Active practice keys for a region, in fixed display order (or null if
+  // the county isn't in the treatment-practices CSV at all).
+  function activePractices(region) {
+    const p = PRACTICES_BY_ID[region.id];
+
+    if (!p) {
+      return null;
+    }
+
+    return CONTROL_PRACTICE_KEYS.filter(key => p[key]);
+  }
+
+
+  function blendColors(hexColors) {
+    if (hexColors.length === 0) {
+      return null;
+    }
+
+    const rgbs = hexColors.map(hexToRgb);
+
+    const avg = channel => Math.round(
+      rgbs.reduce((sum, c) => sum + c[channel], 0) / rgbs.length
+    );
+
+    return `rgb(${avg('r')},${avg('g')},${avg('b')})`;
+  }
+
+
+  // The composite "overlay" color for a county: the average of every active
+  // practice's hue. "Other / innovative" carries no hue of its own (see
+  // PRACTICE_COLORS above) so it never enters the blend — it's surfaced as a
+  // ring in renderMap() instead, and always by name in the hover tooltip and
+  // legend, so identity is never carried by color alone.
+  function controlColor(region) {
+    const active = activePractices(region);
+
+    if (active === null) {
+      return CONTROL_UNKNOWN_COLOR;
+    }
+
+    const hues = active.map(key => PRACTICE_COLORS[key]).filter(Boolean);
+
+    return blendColors(hues) || CONTROL_NONE_COLOR;
+  }
+
+
   function colorForLayer(region, layer) {
     if (!region) {
       return '#173a2a';
+    }
+
+    if (layer === 'control') {
+      return controlColor(region);
     }
 
     if (layer === 'priority') {
@@ -305,6 +402,27 @@ import * as d3 from 'd3';
         );
       })
 
+      // "Other / innovative" has no hue of its own, so on the control
+      // layer it's marked with a dashed ring instead of a blended fill.
+      .attr('stroke', feature => {
+        if (state.activeLayer !== 'control') return null;
+        const region = regionForFeature(feature);
+        const active = region && activePractices(region);
+        return active && active.includes('otherInnovative') ? '#ffffff' : null;
+      })
+      .attr('stroke-width', feature => {
+        if (state.activeLayer !== 'control') return null;
+        const region = regionForFeature(feature);
+        const active = region && activePractices(region);
+        return active && active.includes('otherInnovative') ? 2.5 : null;
+      })
+      .attr('stroke-dasharray', feature => {
+        if (state.activeLayer !== 'control') return null;
+        const region = regionForFeature(feature);
+        const active = region && activePractices(region);
+        return active && active.includes('otherInnovative') ? '6,4' : null;
+      })
+
       .attr('data-county', feature =>
         feature.properties?.NAME || ''
       )
@@ -381,13 +499,21 @@ import * as d3 from 'd3';
     tipEl.className =
       'county-hover-tooltip';
 
+    // The composite fill on the control layer is a blend of every active
+    // practice's hue, so it can't be decoded by eye alone — list the
+    // practices by name too.
+    const subline = state.activeLayer === 'control'
+      ? (() => {
+          const active = activePractices(region);
+          if (active === null) return 'No data';
+          if (active.length === 0) return 'No current control recorded';
+          return active.map(key => escapeHtml(PRACTICE_LABELS[key])).join(', ');
+        })()
+      : `${escapeHtml(PRIORITY_LABELS[region.priority])} Priority`;
+
     tipEl.innerHTML = `
       <strong>${escapeHtml(region.county)} County</strong>
-      <span>
-        ${escapeHtml(
-          PRIORITY_LABELS[region.priority]
-        )} Priority
-      </span>
+      <span>${subline}</span>
     `;
 
     mapArea.appendChild(tipEl);
@@ -431,7 +557,34 @@ import * as d3 from 'd3';
     const el =
       document.getElementById('legendCard');
 
-    if (state.activeLayer === 'priority') {
+    if (state.activeLayer === 'control') {
+
+      const practiceRows = Object.keys(PRACTICE_COLORS).map(key => `
+        <div class="legend-row">
+          <span class="legend-swatch" style="background:${PRACTICE_COLORS[key]}"></span>
+          ${PRACTICE_LABELS[key]}
+        </div>
+      `).join('');
+
+      el.innerHTML = `
+        <p class="legend-title">MOSQUITO CONTROL PRACTICES</p>
+        <p class="legend-note">County color blends every active practice below</p>
+        ${practiceRows}
+        <div class="legend-row">
+          <span class="legend-swatch" style="background:transparent; border:2px dashed #fff;"></span>
+          ${PRACTICE_LABELS.otherInnovative}
+        </div>
+        <div class="legend-row">
+          <span class="legend-swatch" style="background:${CONTROL_NONE_COLOR}"></span>
+          No current control recorded
+        </div>
+        <div class="legend-row">
+          <span class="legend-swatch" style="background:${CONTROL_UNKNOWN_COLOR}"></span>
+          No data
+        </div>
+      `;
+
+    } else if (state.activeLayer === 'priority') {
 
       el.innerHTML = `
         <p class="legend-title">
@@ -535,6 +688,15 @@ import * as d3 from 'd3';
   /* =========================================================
      SUMMARY
   ========================================================= */
+
+  // The overview card counts the mock treatment-priority tiers, which the
+  // control layer doesn't use — hide it there so it can't be misread as a
+  // summary of current mosquito control.
+  function updateSummaryVisibility() {
+    document.querySelector('.summary-card').style.display =
+      state.activeLayer === 'control' ? 'none' : '';
+  }
+
 
   function renderSummary() {
     const counts = {
@@ -668,6 +830,7 @@ import * as d3 from 'd3';
 
       renderMap();
       renderLegend();
+      updateSummaryVisibility();
     });
 
 
@@ -1410,7 +1573,7 @@ import * as d3 from 'd3';
         state.priorityFilter.clear();
 
         state.activeLayer =
-          'priority';
+          'control';
 
         document
           .querySelectorAll(
@@ -1421,7 +1584,7 @@ import * as d3 from 'd3';
             button.setAttribute(
               'aria-pressed',
               button.dataset.layer ===
-                'priority'
+                'control'
                 ? 'true'
                 : 'false'
             );
@@ -1431,6 +1594,7 @@ import * as d3 from 'd3';
         renderMap();
         renderLegend();
         renderSummary();
+        updateSummaryVisibility();
         renderDetails();
         updateSkeeterContextBar();
 
@@ -1809,6 +1973,7 @@ import * as d3 from 'd3';
 
       await Promise.all([
         loadRegions(),
+        loadTreatmentPractices(),
         loadCountyGeoJSON()
       ]);
 
@@ -1849,6 +2014,7 @@ import * as d3 from 'd3';
       renderMap();
       renderLegend();
       renderSummary();
+      updateSummaryVisibility();
       renderDetails();
       greetSkeeter();
       updateSkeeterContextBar();

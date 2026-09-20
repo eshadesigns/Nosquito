@@ -883,6 +883,15 @@ h1.title {
   margin-bottom: 0;
 }
 
+.legend-note {
+  margin: 0 0 8px;
+
+  color: #5a6a5f;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
 .legend-swatch {
   width: 10px;
   height: 10px;
