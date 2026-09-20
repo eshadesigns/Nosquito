@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NoSquito — Florida Mosquito Treatment Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <button class="brand-pill" id="homeBtn" title="Reset view">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+      NOSQUITO
+    </button>
+    <h1 class="title">FLORIDA MOSQUITO TREATMENT DASHBOARD</h1>
+  </header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="action-row">
+        <button class="circle-btn" id="forecastBtn" title="Open Treatment Forecast for the selected county">TREATMENT<br>PREDICTION</button>
+        <button class="circle-btn icon-only" id="searchToggleBtn" title="Search counties" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
+      </div>
+
+      <div>
+        <p class="sidebar-label">TOGGLE MAP LAYER</p>
+        <div class="layer-list" id="layerList">
+          <button class="layer-btn" data-layer="priority" aria-pressed="true">
+            <div class="layer-thumb">
+              <svg viewBox="0 0 100 130"><path d="M28 8 L46 4 L58 10 L62 22 L70 30 L74 46 L68 58 L72 72 L64 88 L68 96 L58 108 L52 122 L46 112 L38 100 L30 92 L32 78 L24 66 L28 52 L20 40 L24 26 Z" fill="#93e35c"/></svg>
+            </div>
+            <span class="layer-name">TREATMENT<br>PRIORITY</span>
+          </button>
+          <button class="layer-btn" data-layer="mosquito" aria-pressed="false">
+            <div class="layer-thumb">
+              <svg viewBox="0 0 100 130"><defs><linearGradient id="gradMc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7c04a"/><stop offset="1" stop-color="#e5484d"/></linearGradient></defs><path d="M28 8 L46 4 L58 10 L62 22 L70 30 L74 46 L68 58 L72 72 L64 88 L68 96 L58 108 L52 122 L46 112 L38 100 L30 92 L32 78 L24 66 L28 52 L20 40 L24 26 Z" fill="url(#gradMc)"/></svg>
+            </div>
+            <span class="layer-name">MOSQUITO<br>CONTROL</span>
+          </button>
+          <button class="layer-btn" data-layer="weather" aria-pressed="false">
+            <div class="layer-thumb">
+              <svg viewBox="0 0 100 130"><defs><linearGradient id="gradW" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd6f7"/><stop offset="1" stop-color="#1c5fa8"/></linearGradient></defs><path d="M28 8 L46 4 L58 10 L62 22 L70 30 L74 46 L68 58 L72 72 L64 88 L68 96 L58 108 L52 122 L46 112 L38 100 L30 92 L32 78 L24 66 L28 52 L20 40 L24 26 Z" fill="url(#gradW)"/></svg>
+            </div>
+            <span class="layer-name">NASA<br>WEATHER</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAP -->
+    <main class="map-area" id="mapArea">
+      <div class="map-svg-wrap">
+        <svg id="floridaSvg" viewBox="0 0 400 620" xmlns="http://www.w3.org/2000/svg">
+          <path class="fl-outline" d="M40 62 L72 50 L118 52 L158 66 L188 84 L206 104 L222 130 L238 158 L254 176 L272 178 L292 186 L302 214 L312 250 L322 292 L330 330 L338 366 L344 400 L350 432 L352 460 L344 480 L328 498 L312 522 L300 548 L288 560 L278 552 L286 534 L266 524 L256 506 L238 494 L226 470 L212 448 L204 420 L196 388 L192 356 L192 322 L186 296 L172 276 L162 250 L156 220 L142 200 L124 182 L106 158 L88 132 L68 108 L52 88 Z" />
+          <g id="countyDots"></g>
+        </svg>
+      </div>
+
+      <div class="map-overlays">
+        <div class="search-wrap" id="searchWrap" style="display:none;">
+          <input type="text" class="search-input" id="searchInput" placeholder="Search Florida counties…" autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="summary-card">
+          <p class="summary-title">FLORIDA TREATMENT OVERVIEW</p>
+          <div class="summary-grid" id="summaryGrid"></div>
+        </div>
+      </div>
+
+      <div class="legend-card" id="legendCard"></div>
+      <div class="toast" id="toast"></div>
+    </main>
+
+    <!-- RIGHT PANEL -->
+    <div class="panel-shell" id="panelShell">
+      <button class="collapse-toggle" id="collapseToggle" title="Collapse panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="right-panel">
+        <div class="panel-tabs">
+          <button class="tab-btn active" data-tab="skeeter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            Ask Skeeter
+          </button>
+          <button class="tab-btn" data-tab="details">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+            Details
+          </button>
+        </div>
+
+        <!-- DETAILS TAB -->
+        <div class="panel-body" id="detailsTab" data-tabbody="details">
+          <div id="detailEmpty" class="detail-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 20l-5.4-2.7A1 1 0 013 16.4V5.6a1 1 0 011.4-.9L9 7m0 13l6-3m-6 3V7m6 10l4.6 2.3A1 1 0 0021 18.4V7.6a1 1 0 00-.6-.9L15 4m0 13V4m0 0L9 7"/></svg>
+            <p>Click a county on the map to see its treatment priority, the reasons behind it, and a forecast.</p>
+          </div>
+          <div id="detailContent" style="display:none; flex-direction:column; gap:14px;"></div>
+        </div>
+
+        <!-- SKEETER TAB -->
+        <div class="panel-body active" id="skeeterTab" data-tabbody="skeeter" style="padding:16px 0 0;">
+          <div class="skeeter-context-bar" id="skeeterContextBar" style="display:none;"></div>
+          <div class="chat-log" id="chatLog"></div>
+          <div class="suggested-prompts" id="suggestedPrompts"></div>
+          <div class="chat-input-row">
+            <button class="clear-btn" id="clearChatBtn" title="Reset conversation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6h12z"/></svg>
+            </button>
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask the data…" autocomplete="off">
+            <button class="send-btn" id="sendBtn" title="Send">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
