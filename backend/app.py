@@ -1,128 +1,148 @@
-"""
-NoSquito backend — API only.
-
-This serves no HTML; the frontend (in ../frontend) is a separate Vite dev server
-that talks to this over /api/* (proxied in dev, see frontend/vite.config.js).
-
-Setup:
-    pip install -r requirements.txt
-    export GEMINI_API_KEY="your-api-key-here"   # (on Windows: set GEMINI_API_KEY=your-key)
-
-Run:
-    python app.py
-    (listens on http://127.0.0.1:5000)
-"""
-
 import json
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request, stream_with_context
 from flask_cors import CORS
 from google import genai
 from google.genai import types
 
+
+# Load variables from the .env file
+load_dotenv()
+
+
+# Create Flask app
 app = Flask(__name__)
-CORS(app)  # allow the Vite dev server (a different port) to call this API
 
-MODEL = "gemini-3.6-flash"  # check ai.google.dev/gemini-api/docs/models for a higher-quality option if needed
+# Allow your dashboard frontend to communicate with this backend
+CORS(app)
 
+# Load the county dataset the map, summary card, and Skeeter all read from
 DATA_PATH = Path(__file__).parent / "data" / "regions.json"
 with open(DATA_PATH) as f:
     REGIONS = json.load(f)
-REGIONS_BY_ID = {r["id"]: r for r in REGIONS}
-
-BASE_SYSTEM_INSTRUCTION = """You are Skeeter, the data assistant built into NoSquito, a Florida mosquito \
-treatment dashboard. Answer only using the Florida county dataset below — treatment \
-priority, mosquito activity, habitat risk, rainfall, temperature, treatment status, \
-expected treatment effectiveness, confidence, and the reasons behind each county's \
-priority. Keep answers short and concrete, and ground every claim in the numbers \
-given rather than general mosquito knowledge. This is demo data for a hackathon \
-prototype, not real current treatment data — say so if it's relevant to the question. \
-If something is asked that the dataset can't answer, say that plainly instead of \
-guessing.
-
-DATASET (one row per county):
-{dataset_summary}
-"""
 
 
-def dataset_summary() -> str:
-    lines = []
-    for r in REGIONS:
-        line = (
-            f"- {r['county']} County: priority={r['priority']}, "
-            f"mosquitoActivity={r['mosquitoActivity']}/100, habitatRisk={r['habitatRisk']}/100, "
-            f"rainfall={r['rainfall']}in, temperature={r['temperature']}F, "
-            f"treatmentStatus=\"{r['treatmentStatus']}\", "
-            f"treatmentEffectiveness={r['treatmentEffectiveness']}%, confidence={r['confidence']}, "
-            f"lastUpdated=\"{r['lastUpdated']}\", reasons={r['reasons']}"
-        )
-        if r.get("changeNote"):
-            line += f", changeNote=\"{r['changeNote']}\""
-        lines.append(line)
-    return "\n".join(lines)
+# Gemini model
+MODEL = "gemini-3.6-flash"
 
 
-def get_client() -> genai.Client:
-    api_key = os.environ.get("GEMINI_API_KEY")
+# Skeeter's personality
+SYSTEM_INSTRUCTION = (
+    "You are Skeeter, a helpful and friendly AI assistant. "
+    "Give clear, conversational answers. "
+    "Keep answers concise unless the user asks for more detail."
+)
+
+
+def get_client():
+    """
+    Create a Gemini client using the API key stored in .env.
+    """
+
+    api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key:
-        raise RuntimeError("GEMINI_API_KEY environment variable is not set.")
+        raise RuntimeError(
+            "GEMINI_API_KEY was not found. "
+            "Make sure it is included in your .env file."
+        )
+
     return genai.Client(api_key=api_key)
 
 
 @app.route("/api/regions")
 def regions():
-    """Single source of truth for the map, summary card, details panel, and Skeeter."""
+    """Data for the map, summary card, and details panel."""
     return jsonify(REGIONS)
 
 
 @app.route("/api/skeeter", methods=["POST"])
-def skeeter():
-    data = request.get_json(force=True) or {}
-    history = data.get("messages", [])  # [{role: "user"|"model", content: str}, ...]
-    selected_id = data.get("selectedId")
+
+def chat():
+    """
+    Receive conversation history from the dashboard
+    and stream Skeeter's response back.
+    """
+
+    data = request.get_json(silent=True) or {}
+    history = data.get("messages", [])
+
+    if not history:
+        return Response(
+            "No messages were provided.",
+            status=400,
+            mimetype="text/plain",
+        )
 
     try:
         client = get_client()
-    except RuntimeError as e:
-        return Response(str(e), status=500, mimetype="text/plain")
 
-    system_instruction = BASE_SYSTEM_INSTRUCTION.format(dataset_summary=dataset_summary())
-    selected = REGIONS_BY_ID.get(selected_id)
-    if selected:
-        system_instruction += (
-            f"\n\nThe user currently has {selected['county']} County selected on the "
-            f"map. If their question doesn't name a different county, assume they mean "
-            f"{selected['county']} County."
+    except RuntimeError as error:
+        return Response(
+            str(error),
+            status=500,
+            mimetype="text/plain",
         )
 
-    contents = [
-        types.Content(
-            role="user" if turn.get("role") == "user" else "model",
-            parts=[types.Part(text=turn.get("content", ""))],
-        )
-        for turn in history
-    ]
+    # Convert dashboard messages into Gemini's format
+    contents = []
 
+    for turn in history:
+        role = "user" if turn.get("role") == "user" else "model"
+        message = turn.get("content", "")
+
+        contents.append(
+            types.Content(
+                role=role,
+                parts=[
+                    types.Part(text=message)
+                ],
+            )
+        )
+
+    # Stream Gemini's response
     def generate():
         try:
             stream = client.models.generate_content_stream(
                 model=MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.4,
+                    system_instruction=SYSTEM_INSTRUCTION,
+                    temperature=0.7,
                 ),
             )
+
             for chunk in stream:
                 if chunk.text:
                     yield chunk.text
-        except Exception as e:
-            yield f"\n\n[Error: {e}]"
 
-    return Response(stream_with_context(generate()), mimetype="text/plain")
+        except Exception as error:
+            yield f"\n\n[Error: {error}]"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/plain",
+    )
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """
+    Simple endpoint to check whether Skeeter is running.
+    """
+
+    return {
+        "status": "ok",
+        "service": "skeeter",
+    }
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(
+        debug=True,
+        host="0.0.0.0",
+        port=5001,
+    )
