@@ -7,9 +7,36 @@ import './style.css';
 const PRIORITY_COLORS = { CRITICAL:'#e5484d', HIGH:'#f2874e', MODERATE:'#f0c94a', LOW:'#59c9a5' };
 const PRIORITY_LABELS = { CRITICAL:'Critical', HIGH:'High', MODERATE:'Moderate', LOW:'Monitor' };
 
-const CONTROL_PRACTICE_KEYS = ['larviciding','sourceReduction','adulticiding','biological','publicEducation','surveillance','aerial','ground','otherInnovative'];
-const CONTROL_COLORS = { ACTIVE:'#59c9a5', NONE:'#e5484d', UNKNOWN:'#8a9a8f' };
-const CONTROL_LABELS = { ACTIVE:'Active control program', NONE:'No current control recorded', UNKNOWN:'No data' };
+// Eight of the nine CSV practices get their own validated hue (checked with
+// scripts/validate_palette.js from the dataviz skill against this app's dark
+// map surface, #0a2618 — all adjacent-pair CVD/contrast checks pass). The
+// ninth, "Other / innovative", is a genuine catch-all bucket, so per the
+// skill's rule ("a 9th series is never a generated hue") it isn't given a
+// hue at all — it's shown as a ring around the dot instead of a blended color.
+const PRACTICE_COLORS = {
+  larviciding:     '#3987e5', // blue
+  sourceReduction: '#d95926', // orange
+  adulticiding:    '#199e70', // aqua
+  biological:      '#c98500', // yellow
+  publicEducation: '#d55181', // magenta
+  surveillance:    '#008300', // green
+  aerial:          '#9085e9', // violet
+  ground:          '#e66767', // red
+};
+const CONTROL_PRACTICE_KEYS = Object.keys(PRACTICE_COLORS).concat('otherInnovative');
+const PRACTICE_LABELS = {
+  larviciding:     'Larviciding',
+  sourceReduction: 'Source reduction',
+  adulticiding:    'Adulticiding',
+  biological:      'Biological control',
+  publicEducation: 'Public education',
+  surveillance:    'Surveillance',
+  aerial:          'Aerial treatment',
+  ground:          'Ground treatment',
+  otherInnovative: 'Other / innovative',
+};
+const CONTROL_NONE_COLOR = '#898781';   // has data, no practice active
+const CONTROL_UNKNOWN_COLOR = '#4a4a47'; // no CSV data for this county
 
 let REGIONS = [];
 let REGION_BY_ID = {};
@@ -27,10 +54,31 @@ async function loadTreatmentPractices(){
   PRACTICES_BY_ID = Object.fromEntries(practices.map(p=>[p.id, p]));
 }
 
-function controlStatus(region){
+// Active practice keys for a region, in fixed display order (or null if the
+// county isn't in the CSV at all).
+function activePractices(region){
   const p = PRACTICES_BY_ID[region.id];
-  if(!p) return 'UNKNOWN';
-  return CONTROL_PRACTICE_KEYS.some(key=>p[key]) ? 'ACTIVE' : 'NONE';
+  if(!p) return null;
+  return CONTROL_PRACTICE_KEYS.filter(key=>p[key]);
+}
+
+function blendColors(hexColors){
+  if(hexColors.length===0) return null;
+  const rgbs = hexColors.map(hexToRgb);
+  const avg = (channel)=>Math.round(rgbs.reduce((sum,c)=>sum+c[channel],0)/rgbs.length);
+  return `rgb(${avg('r')},${avg('g')},${avg('b')})`;
+}
+
+// The composite "overlay" color for a county: the average of every active
+// practice's hue. "Other / innovative" carries no hue of its own (see
+// PRACTICE_COLORS above) so it never enters the blend — it's surfaced as a
+// ring in renderMap() instead, and always by name in the hover tooltip and
+// legend, so identity is never carried by color alone.
+function controlColor(region){
+  const active = activePractices(region);
+  if(active===null) return CONTROL_UNKNOWN_COLOR;
+  const hues = active.map(key=>PRACTICE_COLORS[key]).filter(Boolean);
+  return blendColors(hues) || CONTROL_NONE_COLOR;
 }
 
 /* ======================= STATE ======================= */
@@ -54,7 +102,7 @@ function hexToRgb(hex){
   return { r:parseInt(h.substring(0,2),16), g:parseInt(h.substring(2,4),16), b:parseInt(h.substring(4,6),16) };
 }
 function colorForLayer(region, layer){
-  if(layer==='control') return CONTROL_COLORS[controlStatus(region)];
+  if(layer==='control') return controlColor(region);
   if(layer==='mosquito'){
     const t = Math.min(1, region.mosquitoActivity/100);
     return lerpColor('#f7d98a','#c92b30', t);
@@ -67,7 +115,9 @@ function colorForLayer(region, layer){
 }
 function radiusForLayer(region, layer){
   if(layer==='control'){
-    return { ACTIVE:7, NONE:5, UNKNOWN:4 }[controlStatus(region)];
+    const active = activePractices(region);
+    if(active===null) return 4;
+    return active.length===0 ? 5 : 5 + Math.min(active.length, 8)*0.35;
   }
   if(layer==='mosquito') return 4 + (region.mosquitoActivity/100)*5;
   if(layer==='weather') return 4 + (region.rainfall/4)*5;
@@ -99,6 +149,16 @@ function renderMap(){
     circle.setAttribute('fill', color);
     circle.classList.add('county-dot');
     circle.dataset.id = region.id;
+    if(state.activeLayer==='control'){
+      const active = activePractices(region);
+      // "Other / innovative" has no hue of its own (see PRACTICE_COLORS), so
+      // it's marked with a ring instead of folded into the blended fill.
+      if(active && active.includes('otherInnovative')){
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('stroke-dasharray', '2,2');
+      }
+    }
     if(state.priorityFilter.size>0 && !state.priorityFilter.has(region.priority)){
       circle.classList.add('dimmed');
     }
@@ -117,7 +177,31 @@ function showCountyTip(region, e){
   tipEl.setAttribute('x', region.x+10);
   tipEl.setAttribute('y', region.y-8);
   tipEl.classList.add('county-label-tip');
-  tipEl.textContent = region.county.toUpperCase();
+
+  const nameTspan = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+  nameTspan.setAttribute('x', region.x+10);
+  nameTspan.textContent = region.county.toUpperCase();
+  tipEl.appendChild(nameTspan);
+
+  // The composite dot color is a blend of every active practice's hue, so it
+  // can't be decoded by eye alone — list the practices by name too.
+  if(state.activeLayer==='control'){
+    const active = activePractices(region);
+    const lines = active===null
+      ? ['No data']
+      : active.length===0
+        ? ['No current control recorded']
+        : active.map(key=>PRACTICE_LABELS[key]);
+    lines.forEach(line=>{
+      const tspan = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      tspan.setAttribute('x', region.x+10);
+      tspan.setAttribute('dy', '14');
+      tspan.classList.add('county-label-tip-sub');
+      tspan.textContent = line;
+      tipEl.appendChild(tspan);
+    });
+  }
+
   dotsGroup.appendChild(tipEl);
 }
 function hideCountyTip(){
@@ -128,11 +212,16 @@ function hideCountyTip(){
 function renderLegend(){
   const el = document.getElementById('legendCard');
   if(state.activeLayer==='control'){
+    const practiceRows = Object.keys(PRACTICE_COLORS).map(key=>
+      `<div class="legend-row"><span class="legend-swatch" style="background:${PRACTICE_COLORS[key]}"></span>${PRACTICE_LABELS[key]}</div>`
+    ).join('');
     el.innerHTML = `
-      <p class="legend-title">CURRENT MOSQUITO CONTROL</p>
-      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.ACTIVE}"></span>${CONTROL_LABELS.ACTIVE}</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.NONE}"></span>${CONTROL_LABELS.NONE}</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.UNKNOWN}"></span>${CONTROL_LABELS.UNKNOWN}</div>`;
+      <p class="legend-title">MOSQUITO CONTROL PRACTICES</p>
+      <p class="legend-note">Dot color blends every active practice below</p>
+      ${practiceRows}
+      <div class="legend-row"><span class="legend-swatch" style="background:transparent; border:2px dashed #fff;"></span>${PRACTICE_LABELS.otherInnovative}</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_NONE_COLOR}"></span>No current control recorded</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_UNKNOWN_COLOR}"></span>No data</div>`;
   } else if(state.activeLayer==='mosquito'){
     el.innerHTML = `
       <p class="legend-title">MOSQUITO ACTIVITY</p>
@@ -147,6 +236,12 @@ function renderLegend(){
 }
 
 /* ======================= SUMMARY CARD ======================= */
+function updateSummaryVisibility(){
+  // The overview card counts the mock treatment-priority tiers, which the
+  // control layer doesn't use — hide it there so it can't be misread as a
+  // summary of current mosquito control.
+  document.querySelector('.summary-card').style.display = state.activeLayer==='control' ? 'none' : '';
+}
 function renderSummary(){
   const counts = { CRITICAL:0, HIGH:0, MODERATE:0, LOW:0 };
   REGIONS.forEach(r=>counts[r.priority]++);
@@ -179,6 +274,7 @@ document.getElementById('layerList').addEventListener('click', (e)=>{
   document.querySelectorAll('.layer-btn').forEach(b=>b.setAttribute('aria-pressed', b===btn ? 'true':'false'));
   renderMap();
   renderLegend();
+  updateSummaryVisibility();
 });
 
 /* ======================= SEARCH ======================= */
@@ -357,7 +453,7 @@ document.getElementById('homeBtn').addEventListener('click', ()=>{
   state.priorityFilter.clear();
   state.activeLayer = 'control';
   document.querySelectorAll('.layer-btn').forEach(b=>b.setAttribute('aria-pressed', b.dataset.layer==='control' ? 'true':'false'));
-  renderMap(); renderLegend(); renderSummary(); renderDetails(); updateSkeeterContextBar();
+  renderMap(); renderLegend(); renderSummary(); updateSummaryVisibility(); renderDetails(); updateSkeeterContextBar();
   showToast('Back to statewide view');
 });
 
@@ -484,6 +580,7 @@ async function init(){
   renderMap();
   renderLegend();
   renderSummary();
+  updateSummaryVisibility();
   renderDetails();
   greetSkeeter();
   updateSkeeterContextBar();
