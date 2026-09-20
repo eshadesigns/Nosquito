@@ -338,7 +338,7 @@
     "otherInnovative": false
   },
   {
-    "id": "indianriver",
+    "id": "indian-river",
     "county": "Indian River",
     "districts": [
       "Indian River Mosquito Control District"
@@ -498,7 +498,7 @@
     "otherInnovative": false
   },
   {
-    "id": "miamidade",
+    "id": "miami-dade",
     "county": "Miami-Dade",
     "districts": [
       "Miami-Dade County Mosquito Control"
@@ -595,7 +595,7 @@
     "otherInnovative": true
   },
   {
-    "id": "palmbeach",
+    "id": "palm-beach",
     "county": "Palm Beach",
     "districts": [
       "Palm Beach County Mosquito Control"
@@ -675,7 +675,7 @@
     "otherInnovative": false
   },
   {
-    "id": "santarosa",
+    "id": "santa-rosa",
     "county": "Santa Rosa",
     "districts": [
       "Santa Rosa County Mosquito Control"
@@ -723,7 +723,7 @@
     "otherInnovative": false
   },
   {
-    "id": "stjohns",
+    "id": "st-johns",
     "county": "St. Johns",
     "districts": [
       "Anastasia MCD (St. Johns County)"
@@ -739,7 +739,7 @@
     "otherInnovative": false
   },
   {
-    "id": "stlucie",
+    "id": "st-lucie",
     "county": "St. Lucie",
     "districts": [
       "St. Lucie County Mosquito Control District"

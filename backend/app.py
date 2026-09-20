@@ -24,6 +24,11 @@ DATA_PATH = Path(__file__).parent / "data" / "regions.json"
 with open(DATA_PATH) as f:
     REGIONS = json.load(f)
 
+# Load which mosquito-control practices are currently active per county
+TREATMENT_PRACTICES_PATH = Path(__file__).parent / "data" / "treatment_practices.json"
+with open(TREATMENT_PRACTICES_PATH) as f:
+    TREATMENT_PRACTICES = json.load(f)
+
 
 # Gemini model
 MODEL = "gemini-3.6-flash"
@@ -57,6 +62,12 @@ def get_client():
 def regions():
     """Data for the map, summary card, and details panel."""
     return jsonify(REGIONS)
+
+
+@app.route("/api/treatment-practices")
+def treatment_practices():
+    """Which mosquito-control practices are currently active, per county."""
+    return jsonify(TREATMENT_PRACTICES)
 
 
 @app.route("/api/skeeter", methods=["POST"])

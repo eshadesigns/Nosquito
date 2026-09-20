@@ -7,8 +7,13 @@ import './style.css';
 const PRIORITY_COLORS = { CRITICAL:'#e5484d', HIGH:'#f2874e', MODERATE:'#f0c94a', LOW:'#59c9a5' };
 const PRIORITY_LABELS = { CRITICAL:'Critical', HIGH:'High', MODERATE:'Moderate', LOW:'Monitor' };
 
+const CONTROL_PRACTICE_KEYS = ['larviciding','sourceReduction','adulticiding','biological','publicEducation','surveillance','aerial','ground','otherInnovative'];
+const CONTROL_COLORS = { ACTIVE:'#59c9a5', NONE:'#e5484d', UNKNOWN:'#8a9a8f' };
+const CONTROL_LABELS = { ACTIVE:'Active control program', NONE:'No current control recorded', UNKNOWN:'No data' };
+
 let REGIONS = [];
 let REGION_BY_ID = {};
+let PRACTICES_BY_ID = {};
 
 async function loadRegions(){
   const res = await fetch('/api/regions');
@@ -16,9 +21,21 @@ async function loadRegions(){
   REGION_BY_ID = Object.fromEntries(REGIONS.map(r=>[r.id, r]));
 }
 
+async function loadTreatmentPractices(){
+  const res = await fetch('/api/treatment-practices');
+  const practices = await res.json();
+  PRACTICES_BY_ID = Object.fromEntries(practices.map(p=>[p.id, p]));
+}
+
+function controlStatus(region){
+  const p = PRACTICES_BY_ID[region.id];
+  if(!p) return 'UNKNOWN';
+  return CONTROL_PRACTICE_KEYS.some(key=>p[key]) ? 'ACTIVE' : 'NONE';
+}
+
 /* ======================= STATE ======================= */
 const state = {
-  activeLayer: 'priority',
+  activeLayer: 'control',
   selectedId: null,
   panelCollapsed: false,
   activeTab: 'skeeter',
@@ -37,7 +54,7 @@ function hexToRgb(hex){
   return { r:parseInt(h.substring(0,2),16), g:parseInt(h.substring(2,4),16), b:parseInt(h.substring(4,6),16) };
 }
 function colorForLayer(region, layer){
-  if(layer==='priority') return PRIORITY_COLORS[region.priority];
+  if(layer==='control') return CONTROL_COLORS[controlStatus(region)];
   if(layer==='mosquito'){
     const t = Math.min(1, region.mosquitoActivity/100);
     return lerpColor('#f7d98a','#c92b30', t);
@@ -49,8 +66,8 @@ function colorForLayer(region, layer){
   return '#93e35c';
 }
 function radiusForLayer(region, layer){
-  if(layer==='priority'){
-    return { CRITICAL:8, HIGH:7, MODERATE:6, LOW:5 }[region.priority];
+  if(layer==='control'){
+    return { ACTIVE:7, NONE:5, UNKNOWN:4 }[controlStatus(region)];
   }
   if(layer==='mosquito') return 4 + (region.mosquitoActivity/100)*5;
   if(layer==='weather') return 4 + (region.rainfall/4)*5;
@@ -110,13 +127,12 @@ function hideCountyTip(){
 /* ======================= LEGEND ======================= */
 function renderLegend(){
   const el = document.getElementById('legendCard');
-  if(state.activeLayer==='priority'){
+  if(state.activeLayer==='control'){
     el.innerHTML = `
-      <p class="legend-title">TREATMENT PRIORITY</p>
-      <div class="legend-row"><span class="legend-swatch" style="background:${PRIORITY_COLORS.CRITICAL}"></span>Critical — immediate attention</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:${PRIORITY_COLORS.HIGH}"></span>High — treatment recommended</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:${PRIORITY_COLORS.MODERATE}"></span>Moderate — investigate / monitor</div>
-      <div class="legend-row"><span class="legend-swatch" style="background:${PRIORITY_COLORS.LOW}"></span>Low — monitor</div>`;
+      <p class="legend-title">CURRENT MOSQUITO CONTROL</p>
+      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.ACTIVE}"></span>${CONTROL_LABELS.ACTIVE}</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.NONE}"></span>${CONTROL_LABELS.NONE}</div>
+      <div class="legend-row"><span class="legend-swatch" style="background:${CONTROL_COLORS.UNKNOWN}"></span>${CONTROL_LABELS.UNKNOWN}</div>`;
   } else if(state.activeLayer==='mosquito'){
     el.innerHTML = `
       <p class="legend-title">MOSQUITO ACTIVITY</p>
@@ -339,8 +355,8 @@ document.getElementById('forecastBtn').addEventListener('click', ()=>{
 document.getElementById('homeBtn').addEventListener('click', ()=>{
   state.selectedId = null;
   state.priorityFilter.clear();
-  state.activeLayer = 'priority';
-  document.querySelectorAll('.layer-btn').forEach(b=>b.setAttribute('aria-pressed', b.dataset.layer==='priority' ? 'true':'false'));
+  state.activeLayer = 'control';
+  document.querySelectorAll('.layer-btn').forEach(b=>b.setAttribute('aria-pressed', b.dataset.layer==='control' ? 'true':'false'));
   renderMap(); renderLegend(); renderSummary(); renderDetails(); updateSkeeterContextBar();
   showToast('Back to statewide view');
 });
@@ -464,7 +480,7 @@ document.getElementById('clearChatBtn').addEventListener('click', ()=>{
 
 /* ======================= INIT ======================= */
 async function init(){
-  await loadRegions();
+  await Promise.all([loadRegions(), loadTreatmentPractices()]);
   renderMap();
   renderLegend();
   renderSummary();
