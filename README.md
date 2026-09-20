@@ -59,24 +59,6 @@ Users can toggle between map layers to explore the relationship between environm
 
 ---
 
-### 3. Machine Learning Treatment Model
-
-NoSquito includes a machine learning model that predicts the expected effect of different mosquito-control treatments on mosquito populations.
-
-Rather than only asking:
-
-> **"Where are mosquitoes?"**
-
-NoSquito also asks:
-
-> **"How much could a treatment reduce mosquito populations in this region?"**
-
-The model can be used to compare treatment scenarios based on available environmental and mosquito-control data.
-
-Predictions are presented as model estimates and are intended to support analysis rather than replace decisions made by mosquito-control professionals.
-
----
-
 # Dashboard Architecture
 
 ## Map Layer 1: Mosquito Control
@@ -152,28 +134,5 @@ Skeeter uses the same underlying dataset as the dashboard so users can move betw
 
 # How NoSquito Works
 
-```text
-                    ┌─────────────────────┐
-                    │  Mosquito Control   │
-                    │       Data          │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-┌─────────────────┐     ┌─────────────────────┐
-│  NASA Weather   │────▶│     NoSquito        │
-│      Data       │     │  Data Integration   │
-└─────────────────┘     └──────────┬──────────┘
-                                   │
-                    ┌──────────────┼──────────────┐
-                    ▼              ▼              ▼
-              Priority Map   ML Prediction     Skeeter
-                    │              │              │
-                    ▼              ▼              ▼
-              Where is        How effective?   Ask the
-              treatment       will treatment    data
-              needed?         be?
-                    │              │              │
-                    └──────────────┼──────────────┘
-                                   ▼
-                         Informed Mosquito
-                          Control Planning
+<img width="1206" height="1304" alt="ChatGPT Image Sep 20, 2026, 04_44_06 PM" src="https://github.com/user-attachments/assets/3abee9d1-9ab4-4de5-84bc-45f757a7e143" />
+
