@@ -1,0 +1,854 @@
+[
+  {
+    "id": "alachua",
+    "county": "Alachua",
+    "districts": [
+      "City of Gainesville Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "bay",
+    "county": "Bay",
+    "districts": [
+      "Bay County Mosquito Control (Panama City)",
+      "Beach MCD (Panama City Beach)"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": false,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "bradford",
+    "county": "Bradford",
+    "districts": [
+      "Bradford County Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "brevard",
+    "county": "Brevard",
+    "districts": [
+      "Brevard County Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": false,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "broward",
+    "county": "Broward",
+    "districts": [
+      "Broward County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "calhoun",
+    "county": "Calhoun",
+    "districts": [
+      "Calhoun County Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "charlotte",
+    "county": "Charlotte",
+    "districts": [
+      "Charlotte County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": false,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "citrus",
+    "county": "Citrus",
+    "districts": [
+      "Citrus County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "clay",
+    "county": "Clay",
+    "districts": [
+      "Clay County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "collier",
+    "county": "Collier",
+    "districts": [
+      "Collier Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "columbia",
+    "county": "Columbia",
+    "districts": [
+      "Columbia County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "dixie",
+    "county": "Dixie",
+    "districts": [
+      "Dixie County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "duval",
+    "county": "Duval",
+    "districts": [
+      "Jacksonville Mosquito Control (Duval County)"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "escambia",
+    "county": "Escambia",
+    "districts": [
+      "Escambia County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "flagler",
+    "county": "Flagler",
+    "districts": [
+      "East Flagler County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "franklin",
+    "county": "Franklin",
+    "districts": [
+      "Franklin County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": true,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "gadsden",
+    "county": "Gadsden",
+    "districts": [
+      "Gadsden County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "glades",
+    "county": "Glades",
+    "districts": [
+      "Buckhead Ridge Mosquito Control",
+      "Moore Haven Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "gulf",
+    "county": "Gulf",
+    "districts": [
+      "Gulf County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "hernando",
+    "county": "Hernando",
+    "districts": [
+      "Hernando County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "hillsborough",
+    "county": "Hillsborough",
+    "districts": [
+      "Hillsborough County Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "indianriver",
+    "county": "Indian River",
+    "districts": [
+      "Indian River Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "lake",
+    "county": "Lake",
+    "districts": [
+      "Lake County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "lee",
+    "county": "Lee",
+    "districts": [
+      "Lee County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "leon",
+    "county": "Leon",
+    "districts": [
+      "Leon County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "levy",
+    "county": "Levy",
+    "districts": [
+      "Levy County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "liberty",
+    "county": "Liberty",
+    "districts": [
+      "Liberty County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": false,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "madison",
+    "county": "Madison",
+    "districts": [
+      "Madison County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "manatee",
+    "county": "Manatee",
+    "districts": [
+      "Manatee County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "marion",
+    "county": "Marion",
+    "districts": [
+      "Marion County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "martin",
+    "county": "Martin",
+    "districts": [
+      "Martin County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "miamidade",
+    "county": "Miami-Dade",
+    "districts": [
+      "Miami-Dade County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": false,
+    "otherInnovative": true
+  },
+  {
+    "id": "monroe",
+    "county": "Monroe",
+    "districts": [
+      "Florida Keys Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": false,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "nassau",
+    "county": "Nassau",
+    "districts": [
+      "Amelia Island MCD (Nassau County)"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "okaloosa",
+    "county": "Okaloosa",
+    "districts": [
+      "Okaloosa County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "orange",
+    "county": "Orange",
+    "districts": [
+      "Orange County Mosquito Control",
+      "Reedy Creek Improvement District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "osceola",
+    "county": "Osceola",
+    "districts": [
+      "Osceola County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "palmbeach",
+    "county": "Palm Beach",
+    "districts": [
+      "Palm Beach County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "pasco",
+    "county": "Pasco",
+    "districts": [
+      "Pasco County Mosquito Control District"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "pinellas",
+    "county": "Pinellas",
+    "districts": [
+      "Pinellas County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "polk",
+    "county": "Polk",
+    "districts": [
+      "Polk County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "putnam",
+    "county": "Putnam",
+    "districts": [
+      "Putnam County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "santarosa",
+    "county": "Santa Rosa",
+    "districts": [
+      "Santa Rosa County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "sarasota",
+    "county": "Sarasota",
+    "districts": [
+      "Sarasota County Mosquito Management"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "seminole",
+    "county": "Seminole",
+    "districts": [
+      "Seminole County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "stjohns",
+    "county": "St. Johns",
+    "districts": [
+      "Anastasia MCD (St. Johns County)"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "stlucie",
+    "county": "St. Lucie",
+    "districts": [
+      "St. Lucie County Mosquito Control District"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "sumter",
+    "county": "Sumter",
+    "districts": [
+      "Sumter County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "taylor",
+    "county": "Taylor",
+    "districts": [
+      "Taylor County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "volusia",
+    "county": "Volusia",
+    "districts": [
+      "Volusia County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": true,
+    "ground": true,
+    "otherInnovative": false
+  },
+  {
+    "id": "wakulla",
+    "county": "Wakulla",
+    "districts": [
+      "Wakulla County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  },
+  {
+    "id": "walton",
+    "county": "Walton",
+    "districts": [
+      "North Walton Mosquito Control",
+      "South Walton County Mosquito Control"
+    ],
+    "larviciding": true,
+    "sourceReduction": true,
+    "adulticiding": true,
+    "biological": true,
+    "publicEducation": true,
+    "surveillance": true,
+    "aerial": false,
+    "ground": true,
+    "otherInnovative": true
+  },
+  {
+    "id": "washington",
+    "county": "Washington",
+    "districts": [
+      "Washington County Mosquito Control"
+    ],
+    "larviciding": false,
+    "sourceReduction": false,
+    "adulticiding": false,
+    "biological": false,
+    "publicEducation": false,
+    "surveillance": false,
+    "aerial": false,
+    "ground": false,
+    "otherInnovative": false
+  }
+]
