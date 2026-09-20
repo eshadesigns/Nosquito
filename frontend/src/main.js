@@ -1057,37 +1057,23 @@ import * as d3 from 'd3';
     });
 
 
-  function setActiveTab(tab) {
+    function setActiveTab(tab) {
     state.activeTab = tab;
 
-    document
-      .querySelectorAll('.tab-btn')
-      .forEach(button => {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const isActive = btn.dataset.tab === tab;
+      btn.classList.toggle('active', isActive);
+    });
 
-        button.classList.toggle(
-          'active',
-          button.dataset.tab === tab
-        );
-
-      });
-
-    document
-      .querySelectorAll('.panel-body')
-      .forEach(body => {
-
-        body.classList.toggle(
-          'active',
-          body.dataset.tabbody === tab
-        );
-
-      });
-
-    if (state.panelCollapsed) {
-      togglePanel(false);
-    }
+    // Only hide/show the panels.
+    // Do NOT rebuild or clear the chatbot.
+    document.querySelectorAll('[data-panel]').forEach(panel => {
+      const isActive = panel.dataset.panel === tab;
+      panel.classList.toggle('active', isActive);
+    });
   }
-
-
+    
   const panelShell =
     document.getElementById(
       'panelShell'
